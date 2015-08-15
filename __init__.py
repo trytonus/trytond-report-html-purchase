@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from trytond.pool import Pool
 from purchase import PurchaseReport, PurchaseReportWizardStart, \
-    PurchaseReportWizard
+    PurchaseReportWizard, PurchaseOrder
 
 
 def register():
@@ -11,6 +11,7 @@ def register():
     )
     Pool.register(
         PurchaseReport,
+        PurchaseOrder,
         module='report_html_purchase', type_='report'
     )
     Pool.register(
