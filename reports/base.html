@@ -6,10 +6,13 @@
     <meta name="description" content="">
     <meta name="author" content="Fulfil.IO Inc.">
 
+    {% block stylesheets %}
     <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
-    <link href='http://fonts.googleapis.com/css?family=Lora' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="{{ 'report_html_stock/reports/css/bootstrap/css/bootstrap.min.css'|modulepath }}">
+    <link rel="stylesheet" href="{{ 'report_html_stock/reports/css/font-awesome/css/font-awesome.min.css'|modulepath }}">
+    {% endblock stylesheets %}
+
+    {% block custom_style %}
     <style type="text/css">
       hr {
         border-top: 1px solid #000;
@@ -41,6 +44,8 @@
         page-break-inside: avoid;
       }
     </style>
+    {% endblock custom_style %}
+
   </head>
   <body>
     {% block main %}{% endblock %}
