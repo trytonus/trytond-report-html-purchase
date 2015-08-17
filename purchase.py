@@ -7,7 +7,8 @@ from trytond.wizard import Wizard, StateAction, StateView, Button
 from openlabs_report_webkit import ReportWebkit
 
 __all__ = [
-    'PurchaseReport', 'PurchaseReportWizardStart', 'PurchaseReportWizard'
+    'PurchaseReport', 'PurchaseReportWizardStart', 'PurchaseReportWizard',
+    'PurchaseOrder'
 ]
 
 
@@ -40,6 +41,10 @@ class ReportMixin(ReportWebkit):
         return super(ReportMixin, cls).wkhtml_to_pdf(
             data, options=options
         )
+
+
+class PurchaseOrder(ReportMixin):
+    __name__ = 'purchase.purchase.html'
 
 
 class PurchaseReport(ReportMixin):
