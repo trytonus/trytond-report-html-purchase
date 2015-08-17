@@ -84,7 +84,6 @@
                 {{ line.description }}
               {% endif %}
             </td>
-            <td>{{ line.supplier_product_code }}</td>
             <td class="text-right">
               {% if line.quantity is not none %}
                 {{ formatLang(line.quantity, purchase.party.lang, digits=line.unit_digits) }} {% if line.unit.symbol != 'u' %}{{ line.unit.symbol }}{% endif %}
