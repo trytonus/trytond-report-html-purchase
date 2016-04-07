@@ -71,11 +71,13 @@
           <tr>
             <td>{{ loop.index }}</i></td>
             <td>
-              {% if line.product %}
-                {{ line.product.code }}
+            {% for line in purchase.supplier_reference %}
+              {% if line.supplier %}
+                {{ line.supplier.code }}
               {% else %}
-                -
+                {{line.product.code}}
               {% endif %}
+              {% endfor %}
             </td>
             <td>
               {% if line.product %}
