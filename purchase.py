@@ -46,6 +46,30 @@ class ReportMixin(ReportWebkit):
 class PurchaseOrder(ReportMixin):
     __name__ = 'purchase.purchase.html'
 
+    @classmethod
+    def get_supplier_code(cls, product, purchase):
+        PurchaseSupplier = Pool().get('purchase.product_supplier')
+
+        try:
+            supplier, = PurchaseSupplier.search([
+                ('party', '=', purchase.party.id),
+                ('product', '=', product),
+            ])
+        except ValueError:
+            pass
+        else:
+            return supplier.code
+
+    @classmethod
+    def parse(cls, report, records, data, localcontext):
+        localcontext.update({
+            'get_supplier_code': cls.get_supplier_code,
+        })
+
+        return super(PurchaseOrder, cls).parse(
+            report, records, data, localcontext
+        )
+
 
 class PurchaseReport(ReportMixin):
     "Purchase Report"
