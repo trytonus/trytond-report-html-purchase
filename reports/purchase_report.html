@@ -3,7 +3,8 @@
 {% block title %}Purchase Report{% endblock %}
 {% from 'report_html_purchase/reports/_helpers.html' import render_purchase_table %}
 
-{% block main %}
+{% block body %}
+  {# loop will not be available in the context of scoped block #}
     <div class="container-fluid">
         {% block header %}
         <div class="row">
@@ -76,4 +77,4 @@
             </div>
         </div>
     </div>
-{% endblock %}
+{% endblock body %}
