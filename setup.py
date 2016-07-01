@@ -116,6 +116,8 @@ setup(
         'trytond.modules.%s' % MODULE: info.get('xml', [])
         + info.get('translation', [])
         + ['tryton.cfg', 'locale/*.po', 'tests/*.rst', 'reports/*.odt']
+        + ['reports/css/bootstrap/css/*']
+        + ['reports/css/bootstrap/fonts/*', 'reports/css/font-awesome/css/*']
         + ['view/*.xml', 'reports/*.html'],
     },
     classifiers=[
