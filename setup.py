@@ -76,7 +76,9 @@ minor_version = int(minor_version)
 
 requires = []
 
-MODULE2PREFIX = {}
+MODULE2PREFIX = {
+    'report_webkit': 'openlabs',
+}
 
 MODULE = "report_html_purchase"
 PREFIX = "fio"
@@ -116,7 +118,8 @@ setup(
         'trytond.modules.%s' % MODULE: info.get('xml', [])
         + info.get('translation', [])
         + ['tryton.cfg', 'locale/*.po', 'tests/*.rst', 'reports/*.odt']
-        + ['view/*.xml', 'reports/*.html'],
+        + ['view/*.xml', 'reports/*.html', 'reports/bootstrap/css/*.css']
+        + ['reports/font-awesome/css/*.css']
     },
     classifiers=[
         'Development Status :: 4 - Beta',

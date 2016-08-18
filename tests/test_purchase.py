@@ -6,16 +6,18 @@ from decimal import Decimal
 from dateutil.relativedelta import relativedelta
 
 import trytond.tests.test_tryton
-from trytond.tests.test_tryton import POOL, DB_NAME, USER, CONTEXT
+from trytond.tests.test_tryton import POOL, USER, CONTEXT, \
+    ModuleTestCase, with_transaction
 from trytond.transaction import Transaction
 from trytond.pyson import Eval
 from trytond.pool import Pool
 
 
-class TestPurchase(unittest.TestCase):
+class TestPurchase(ModuleTestCase):
     """
     Purchase tests for Purchase Report module
     """
+    module = "report_html_purchase"
 
     def setUp(self):
         """
@@ -255,7 +257,7 @@ class TestPurchase(unittest.TestCase):
             'type': 'goods',
             'list_price': Decimal('2000'),
             'cost_price': Decimal('1500'),
-            'category': self.product_category.id,
+            'categories': [('add', [self.product_category.id])],
             'default_uom': self.uom,
             'account_revenue': self._get_account_by_kind(
                 'revenue', company=self.company.id).id,
@@ -270,6 +272,7 @@ class TestPurchase(unittest.TestCase):
             'code': '123',
         }])
 
+    @with_transaction()
     def test_0010_test_purchase_report_wizard(self):
         """
         Test the purchase report wizard
@@ -277,86 +280,85 @@ class TestPurchase(unittest.TestCase):
         ActionReport = POOL.get('ir.action.report')
         ReportWizard = POOL.get('report.purchase.wizard', type="wizard")
 
-        with Transaction().start(DB_NAME, USER, context=CONTEXT):
-            self.setup_defaults()
+        self.setup_defaults()
 
-            purchase_report_action, = ActionReport.search([
-                ('report_name', '=', 'report.purchase'),
-                ('name', '=', 'Purchase Report')
-            ])
-            purchase_report_action.extension = 'pdf'
-            purchase_report_action.save()
+        purchase_report_action, = ActionReport.search([
+            ('report_name', '=', 'report.purchase'),
+            ('name', '=', 'Purchase Report')
+        ])
+        purchase_report_action.extension = 'pdf'
+        purchase_report_action.save()
 
-            with Transaction().set_context({'company': self.company.id}):
-                purchase, = self.Purchase.create([{
-                    'reference': 'Test Purchase',
-                    'payment_term': self.payment_term,
-                    'currency': self.company.currency.id,
-                    'party': self.party.id,
-                    'invoice_address': self.party.addresses[0],
-                    'purchase_date': date.today(),
-                }])
-                purchase_line, = self.PurchaseLine.create([{
-                    'type': 'line',
-                    'quantity': 2,
-                    'unit': self.uom,
-                    'unit_price': 10000,
-                    'description': 'Test description',
-                    'product': self.product.id,
-                    'purchase': purchase.id
-                }])
+        with Transaction().set_context({'company': self.company.id}):
+            purchase, = self.Purchase.create([{
+                'reference': 'Test Purchase',
+                'payment_term': self.payment_term,
+                'currency': self.company.currency.id,
+                'party': self.party.id,
+                'invoice_address': self.party.addresses[0],
+                'purchase_date': date.today(),
+            }])
+            purchase_line, = self.PurchaseLine.create([{
+                'type': 'line',
+                'quantity': 2,
+                'unit': self.uom,
+                'unit_price': 10000,
+                'description': 'Test description',
+                'product': self.product.id,
+                'purchase': purchase.id
+            }])
 
-                session_id, start_state, end_state = ReportWizard.create()
-                result = ReportWizard.execute(session_id, {}, start_state)
-                self.assertEqual(result.keys(), ['view'])
-                self.assertEqual(result['view']['buttons'], [
-                    {
-                        'state': 'end',
-                        'states': '{}',
-                        'icon': 'tryton-cancel',
-                        'default': False,
-                        'string': 'Cancel',
-                    }, {
-                        'state': 'generate',
-                        'states': '{}',
-                        'icon': 'tryton-ok',
-                        'default': True,
-                        'string': 'Generate',
-                    }
-                ])
-                data = {
-                    start_state: {
-                        'supplier': self.party,
-                        'product': self.product,
-                        'start_date': date.today(),
-                        'end_date': date.today(),
-                    },
+            session_id, start_state, end_state = ReportWizard.create()
+            result = ReportWizard.execute(session_id, {}, start_state)
+            self.assertEqual(result.keys(), ['view'])
+            self.assertEqual(result['view']['buttons'], [
+                {
+                    'state': 'end',
+                    'states': '{}',
+                    'icon': 'tryton-cancel',
+                    'default': False,
+                    'string': 'Cancel',
+                }, {
+                    'state': 'generate',
+                    'states': '{}',
+                    'icon': 'tryton-ok',
+                    'default': True,
+                    'string': 'Generate',
                 }
-                result = ReportWizard.execute(
-                    session_id, data, 'generate'
-                )
-                self.assertEqual(len(result['actions']), 1)
+            ])
+            data = {
+                start_state: {
+                    'supplier': self.party,
+                    'product': self.product,
+                    'start_date': date.today(),
+                    'end_date': date.today(),
+                },
+            }
+            result = ReportWizard.execute(
+                session_id, data, 'generate'
+            )
+            self.assertEqual(len(result['actions']), 1)
 
-                report_name = result['actions'][0][0]['report_name']
-                report_data = result['actions'][0][1]
+            report_name = result['actions'][0][0]['report_name']
+            report_data = result['actions'][0][1]
 
-                PurchaseReport = POOL.get(report_name, type="report")
+            PurchaseReport = POOL.get(report_name, type="report")
 
-                # Set Pool.test as False as we need the report to be generated
-                # as PDF
-                # This is specifically to cover the PDF coversion code
-                Pool.test = False
+            # Set Pool.test as False as we need the report to be generated
+            # as PDF
+            # This is specifically to cover the PDF coversion code
+            Pool.test = False
 
-                val = PurchaseReport.execute([], report_data)
+            val = PurchaseReport.execute([], report_data)
 
-                # Revert Pool.test back to True for other tests to run normally
-                Pool.test = True
+            # Revert Pool.test back to True for other tests to run normally
+            Pool.test = True
 
-                self.assert_(val)
-                # Assert report type
-                self.assertEqual(val[0], 'pdf')
-                # Assert report name
-                self.assertEqual(val[3], 'Purchase Report')
+            self.assert_(val)
+            # Assert report type
+            self.assertEqual(val[0], 'pdf')
+            # Assert report name
+            self.assertEqual(val[3], 'Purchase Report')
 
 
 def suite():

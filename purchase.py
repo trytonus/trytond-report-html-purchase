@@ -53,10 +53,12 @@ class PurchaseReport(ReportMixin):
     __name__ = 'report.purchase'
 
     @classmethod
-    def parse(cls, report, records, data, localcontext):
+    def get_context(cls, records, data):
         Purchase = Pool().get('purchase.purchase')
         Party = Pool().get('party.party')
         Product = Pool().get('product.product')
+
+        report_context = super(PurchaseReport, cls).get_context(records, data)
 
         domain = [
             ('state', 'in', ['confirmed', 'processing', 'done']),
@@ -74,14 +76,12 @@ class PurchaseReport(ReportMixin):
 
         purchases = Purchase.search(domain)
 
-        localcontext.update({
+        report_context.update({
             'purchases': purchases,
             'supplier': supplier_id and Party(supplier_id),
             'product': product_id and Product(product_id),
         })
-        return super(PurchaseReport, cls).parse(
-            report, records, data, localcontext
-        )
+        return report_context
 
 
 class PurchaseReportWizardStart(ModelView):
