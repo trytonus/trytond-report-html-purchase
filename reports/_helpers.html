@@ -1,4 +1,4 @@
-{% macro render_purchase_table(purchases, supplier, formatLang) %}
+{% macro render_purchase_table(purchases, supplier, format_number) %}
     {% if purchases %}
         <table class="table">
             <thead>
@@ -27,7 +27,7 @@
                       <tr>
                           <td {% if not supplier %}colspan="4"{% else %}colspan="3"{% endif %}></td>
                           <td>{{ line.product.name }}</td>
-                          <td class="text-right">{{ formatLang(line.quantity, purchase.party.lang, digits=line.unit_digits) }} {% if line.unit.symbol != 'u' %}{{ line.unit.symbol }}{% endif %}</td>
+                          <td class="text-right">{{ format_number(line.quantity, purchase.party.lang, digits=line.unit_digits) }} {% if line.unit.symbol != 'u' %}{{ line.unit.symbol }}{% endif %}</td>
                           <td></td>
                       </tr>
                     {% endfor %}

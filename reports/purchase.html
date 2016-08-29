@@ -1,7 +1,7 @@
 {% extends 'report_html_purchase/reports/base.html' %}
 
 {% block title %}
-  Purchase {{ records|join('# ', 'reference') }}
+  Purchase
 {% endblock %}
 
 {% block report_header scoped %}
@@ -86,7 +86,7 @@
             </td>
             <td class="text-right">
               {% if line.quantity is not none %}
-                {{ formatLang(line.quantity, purchase.party.lang, digits=line.unit_digits) }} {% if line.unit.symbol != 'u' %}{{ line.unit.symbol }}{% endif %}
+                {{ format_number(line.quantity, purchase.party.lang, digits=line.unit_digits) }} {% if line.unit.symbol != 'u' %}{{ line.unit.symbol }}{% endif %}
               {% endif %}
             </td>
             {% if purchase.state != 'quotation' %}
