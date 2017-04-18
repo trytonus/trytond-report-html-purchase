@@ -72,7 +72,12 @@
             <td>{{ loop.index }}</i></td>
             <td>
               {% if line.product %}
-                {{ line.product.code }}
+                {% set supplier_code = get_supplier_code(line.product, purchase) %}
+                {% if supplier_code %}
+                  {{ supplier_code }}
+                {% else %}
+                  {{ line.product.code }}
+                {% endif %}
               {% else %}
                 -
               {% endif %}
