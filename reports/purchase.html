@@ -69,21 +69,28 @@
         </tr>
         {% for line in purchase.lines %}
           <tr>
-            <td>{{ loop.index }}</i></td>
+            <td>{{ loop.index }} </i></td>
             <td>
-              {% if line.product %}
+            {% if line.product %}
                 {{ line.product.code }}
-              {% else %}
+            {% else %}
                 -
-              {% endif %}
+            {% endif %}
             </td>
             <td>
               {% if line.product %}
                 {{ line.product.name }}
               {% else %}
                 {{ line.description }}
+                {% if line.product %}
+                  {% if line.supplier_product_code %}
+                      {{ line.supplier_product_code }}
+                  {% endif %}
+                Our SKU: {{ line.product.code }}
+                {% endif %}
               {% endif %}
             </td>
+            <td>{{ line.supplier_product_code }}</td>
             <td class="text-right">
               {% if line.quantity is not none %}
                 {{ format_number(line.quantity, purchase.party.lang, digits=line.unit_digits) }} {% if line.unit.symbol != 'u' %}{{ line.unit.symbol }}{% endif %}
